@@ -1,0 +1,23 @@
+= fluent-plugin-pghstore
+
+== Component
+
+=== PghstoreOutput
+
+Output to PostgreSQL hstore database.
+
+== Configuration
+
+=== PghstoreOutput
+
+    <match accesslog.**>
+      type pghstore
+    </match>
+
+== TODO
+
+
+== Copyright
+
+Copyright:: Copyright (c) 2012- Shirou WAKAYAMA
+License::   MIT License
