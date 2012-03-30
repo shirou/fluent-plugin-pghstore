@@ -2,22 +2,74 @@
 
 == Component
 
-=== PghstoreOutput
+=== PgHStoreOutput
 
-Output to PostgreSQL hstore database.
+Output to PostgreSQL hstore database. 
+
+Output table should have tag, time and record column.:
+
+  CREATE TABLE #{tablename} (
+    tag TEXT,
+    time TIMESTAMP WITH TIME ZONE,
+    record HSTORE
+  );
+
+== Requirement
+
+- PostgreSQL 9.0 or higher
+  - hstore changed at PostgreSQL 9.0. 
+- postgres-contrib
+
+=== How to Install hstore
+
+hstore is in the contrib. 
+
+9.1 or higher:
+
+  psql <dbname> -c "CREATE EXTENSION hstore;"
+
+9.0:
+
+  psql <dbname> -f ${PGHOME}/share/contrib/hstore.sql
 
 == Configuration
 
-=== PghstoreOutput
+Example:
 
-    <match accesslog.**>
-      type pghstore
-    </match>
+  <match apache.*>
+    type pghstore
+    database test
+    table test 
+    table_option CREATE INDEX time_index ON testb (time);
+  </match>
 
-== TODO
+=== Options
 
+- Required
+  - database 
+    - database name
+- Optional
+  - table
+    - tablename. If not set, use +fluentd_store+. If not exists, creates automatically.
+  - host
+  - port
+  - user
+  - password
+  - table_option 
+    - Add some SQL. This SQL is called only once when table is created from this plugin.
+
+== Limitation
+
+- Nested output is not allowd.
+- Since using only one connection, performance may become bad. When you meet this, use connection pooling and write patch!
+
+
+== Thanks
+
+This source code is mainly borrowed from
+{fluent-plugin-datacounter}{https://rubygems.org/gems/fluent-plugin-datacounter}. Thank you for tagomoris.
 
 == Copyright
 
 Copyright:: Copyright (c) 2012- Shirou WAKAYAMA
-License::   MIT License
+License::   Apache License
