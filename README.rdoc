@@ -19,6 +19,7 @@ Output table should have tag, time and record column.:
 - PostgreSQL 9.0 or higher
   - hstore changed at PostgreSQL 9.0. 
 - postgres-contrib
+- ruby-pg
 
 === How to Install hstore
 
