@@ -1,0 +1,11 @@
+*.gem
+.bundle
+Gemfile.lock
+pkg/*
+# For TextMate, emacs, vim
+*.tmproj
+tmtags
+*~
+\#*
+.\#*
+*.swp
