@@ -46,13 +46,7 @@ class Fluent::PgHStoreOutput < Fluent::BufferedOutput
   def generate_sql(tag, time, record)
     kv_list = []
     record.each {|(key,value)|
-      begin
-        v = Integer(value)
-      rescue ArgumentError => e
-        kv_list.push("#{key} => \"#{value}\"")  # might be string
-      else
-        kv_list.push("#{key} => #{value}")
-      end
+      kv_list.push("\"#{key}\" => \"#{value}\"")
     }
 
     tag_list = tag.split(".")
