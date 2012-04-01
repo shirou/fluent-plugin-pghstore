@@ -9,10 +9,12 @@ Output to PostgreSQL hstore database.
 Output table should have tag, time and record column.:
 
   CREATE TABLE #{tablename} (
-    tag TEXT,
+    tag TEXT[],
     time TIMESTAMP WITH TIME ZONE,
     record HSTORE
   );
+
+A tag is splited by "." and stored in the TEXT[]. (Yes, postgres can handle an array!)
 
 == Requirement
 
@@ -51,7 +53,9 @@ Example:
     - database name
 - Optional
   - table
-    - tablename. If not set, use +fluentd_store+. If not exists, creates automatically.
+    - tablename. 
+    - If not set, use +fluentd_store+. 
+    - If not exists, creates automatically.
   - host
   - port
   - user
@@ -62,12 +66,12 @@ Example:
 == Limitation
 
 - Nested output is not allowd.
-- Since using only one connection, performance may become bad. When you meet this, use connection pooling and write patch!
-
+- Since using only one connection, the performance may become bad. When you meet this, use connection pooling and write patch!
 
 == Thanks
 
 This source code is mainly borrowed from
+
 {fluent-plugin-datacounter}{https://rubygems.org/gems/fluent-plugin-datacounter}. Thank you for tagomoris.
 
 == Copyright

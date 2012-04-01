@@ -55,10 +55,14 @@ class Fluent::PgHStoreOutput < Fluent::BufferedOutput
       end
     }
 
+    tag_list = tag.split(".")
+    tag_list.map! {|t| "'" + t + "'"}
+
     sql =<<"SQL"
 INSERT INTO #{@table} (tag, time, record) VALUES
-('#{tag}', '#{Time.at(time)}'::TIMESTAMP WITH TIME ZONE, '#{kv_list.join(",")}');
+(ARRAY[#{tag_list.join(",")}], '#{Time.at(time)}'::TIMESTAMP WITH TIME ZONE, '#{kv_list.join(",")}');
 SQL
+
     return sql
   end
 
@@ -86,7 +90,7 @@ SQL
   def create_table(tablename)
     sql =<<"SQL"
 CREATE TABLE #{tablename} (
-  tag TEXT,
+  tag TEXT[],
   time TIMESTAMP WITH TIME ZONE,
   record HSTORE
 );
