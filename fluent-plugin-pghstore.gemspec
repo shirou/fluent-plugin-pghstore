@@ -3,10 +3,10 @@ $:.push File.expand_path("../lib", __FILE__)
 
 Gem::Specification.new do |s|
   s.name        = "fluent-plugin-pghstore"
-  s.version     = "0.0.3"
+  s.version     = "0.0.4"
   s.authors     = ["WAKAYAMA Shirou"]
   s.email       = ["shirou.faw@gmail.com"]
-  s.homepage    = "https://github.com/r_rudi/fluent-plugin-pghstore"
+  s.homepage    = "https://github.com/shirou/fluent-plugin-pghstore"
   s.summary     = %q{Output to PostgreSQL database which has a hstore extension}
   s.description = %q{Output to PostgreSQL database which has a hstore extension}
 
