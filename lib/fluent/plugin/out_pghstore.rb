@@ -54,7 +54,7 @@ class Fluent::PgHStoreOutput < Fluent::BufferedOutput
 
     sql =<<"SQL"
 INSERT INTO #{@table} (tag, time, record) VALUES
-(ARRAY[#{tag_list.join(",")}], '#{Time.at(time)}'::TIMESTAMP WITH TIME ZONE, '#{kv_list.join(",")}');
+(ARRAY[#{tag_list.join(",")}], '#{Time.at(time)}'::TIMESTAMP WITH TIME ZONE, E'#{kv_list.join(",")}');
 SQL
 
     return sql
