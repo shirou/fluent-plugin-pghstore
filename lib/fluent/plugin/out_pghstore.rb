@@ -37,7 +37,11 @@ class Fluent::PgHStoreOutput < Fluent::BufferedOutput
   def write(chunk)
     chunk.msgpack_each {|(tag, time_str, record)|
       sql = generate_sql(tag, time_str, record)
-      @conn.exec(sql)
+      begin
+        @conn.exec(sql)
+      rescue PGError => e 
+        $log.error "PGError: " + e.message  # throw away
+      end
     }
   end
 
