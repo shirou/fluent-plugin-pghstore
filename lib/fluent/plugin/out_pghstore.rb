@@ -18,16 +18,12 @@ class Fluent::PgHStoreOutput < Fluent::BufferedOutput
   def start
     super
 
-    @conn = get_connection(@database, @host, @port, @user, @password)
-
     create_table(@table) unless table_exists?(@table)
-
   end
 
   def shutdown
     super
 
-    @conn.close
   end
   
   def format(tag, time, record)
@@ -35,14 +31,21 @@ class Fluent::PgHStoreOutput < Fluent::BufferedOutput
   end
 
   def write(chunk)
+    conn = get_connection()
+    if conn == nil
+      return
+    end
+
     chunk.msgpack_each {|(tag, time_str, record)|
       sql = generate_sql(tag, time_str, record)
       begin
-        @conn.exec(sql)
+        conn.exec(sql)
       rescue PGError => e 
         $log.error "PGError: " + e.message  # throw away
       end
+
     }
+    conn.close
   end
 
   private
@@ -64,12 +67,17 @@ SQL
     return sql
   end
 
-  def get_connection(dbname, host, port, user, password)
-    if user
-      return PG.connect(:dbname => dbname, :host => host, :port => port,
-                        :user => user, :password => password)
-    else
-      return PG.connect(:dbname => dbname, :host => host, :port => port)
+  def get_connection()
+    begin
+      if @user
+        return PG.connect(:dbname => @database, :host => @host, :port => @port,
+                          :user => @user, :password => @password)
+      else
+        return PG.connect(:dbname => @database, :host => @host, :port => @port)
+      end
+    rescue PGError => e 
+      $log.error "Error: could not connect database:" + @database
+      return nil
     end
   end
 
@@ -77,7 +85,9 @@ SQL
     sql =<<"SQL"
 SELECT COUNT(*) FROM pg_tables WHERE tablename = '#{table}';
 SQL
-    res = @conn.exec(sql)
+    conn = get_connection()
+    res = conn.exec(sql)
+        conn.close
     if res[0]["count"] == "1"
       return true
     else
@@ -96,7 +106,9 @@ SQL
 
     sql += @table_option if @table_option
 
-    @conn.exec(sql)
+    conn = get_connection()
+    conn.exec(sql)
+    conn.close
 
     $log.warn "#{tablename} table is not exists. created."
   end
