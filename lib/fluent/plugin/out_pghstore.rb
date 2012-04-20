@@ -24,6 +24,9 @@ class Fluent::PgHStoreOutput < Fluent::BufferedOutput
   def shutdown
     super
 
+    if @conn != nil and @conn.finished?() == false
+      conn.close()
+    end
   end
   
   def format(tag, time, record)
@@ -32,20 +35,18 @@ class Fluent::PgHStoreOutput < Fluent::BufferedOutput
 
   def write(chunk)
     conn = get_connection()
-    if conn == nil
-      return
-    end
+    return if conn == nil  # TODO: chunk will be dropped. should retry?
 
     chunk.msgpack_each {|(tag, time_str, record)|
       sql = generate_sql(tag, time_str, record)
       begin
         conn.exec(sql)
       rescue PGError => e 
-        $log.error "PGError: " + e.message  # throw away
+        $log.error "PGError: " + e.message  # dropped if error
       end
-
     }
-    conn.close
+
+    conn.close()
   end
 
   private
@@ -68,17 +69,23 @@ SQL
   end
 
   def get_connection()
+    if @conn != nil and @conn.finished?() == false
+        return @conn  # connection is alived
+    end
+
     begin
       if @user
-        return PG.connect(:dbname => @database, :host => @host, :port => @port,
-                          :user => @user, :password => @password)
+        @conn = PG.connect(:dbname => @database, :host => @host, :port => @port,
+                           :user => @user, :password => @password)
       else
-        return PG.connect(:dbname => @database, :host => @host, :port => @port)
+        @conn = PG.connect(:dbname => @database, :host => @host, :port => @port)
       end
     rescue PGError => e 
       $log.error "Error: could not connect database:" + @database
       return nil
     end
+    return @conn
+
   end
 
   def table_exists?(table)
