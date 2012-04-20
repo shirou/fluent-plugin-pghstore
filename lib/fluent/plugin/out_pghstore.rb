@@ -93,8 +93,9 @@ SQL
 SELECT COUNT(*) FROM pg_tables WHERE tablename = '#{table}';
 SQL
     conn = get_connection()
+    raise "Could not connect the database at startup. abort." if conn == nil
     res = conn.exec(sql)
-        conn.close
+    conn.close
     if res[0]["count"] == "1"
       return true
     else
@@ -114,10 +115,17 @@ SQL
     sql += @table_option if @table_option
 
     conn = get_connection()
-    conn.exec(sql)
+    raise "Could not connect the database at create_table. abort." if conn == nil
+
+    begin
+      conn.exec(sql) 
+    rescue PGError => e
+      $log.error "Error at create_table:" + e.message
+      $log.error "SQL:" + sql
+    end
     conn.close
 
-    $log.warn "#{tablename} table is not exists. created."
+    $log.warn "table #{tablename} was not exist. created it."
   end
 
 end
