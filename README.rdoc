@@ -78,3 +78,17 @@ This source code is mainly borrowed from
 
 Copyright:: Copyright (c) 2012- Shirou WAKAYAMA
 License::   Apache License
+
+
+== ChangeLog
+
+- 0.2.1 / 2012-09-11
+
+PostgreSQL 9.2 {removes hstore's => operator}{http://wiki.postgresql.org/wiki/What's_new_in_PostgreSQL_9.2#Remove_hstore.27s_.3D.3E_operator}. This
+plugin checks the server's version and change the operator.
+
+But not fully tested yet.
+
+
+
+

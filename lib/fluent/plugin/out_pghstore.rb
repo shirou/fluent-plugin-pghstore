@@ -54,7 +54,11 @@ class Fluent::PgHStoreOutput < Fluent::BufferedOutput
   def generate_sql(tag, time, record)
     kv_list = []
     record.each {|(key,value)|
-      kv_list.push("\"#{key}\" => \"#{value}\"")
+      if @after_9_2
+        kv_list.push("\"#{key}\" , \"#{value}\"")
+      else
+        kv_list.push("\"#{key}\" => \"#{value}\"")
+      end
     }
 
     tag_list = tag.split(".")
@@ -84,6 +88,10 @@ SQL
       $log.error "Error: could not connect database:" + @database
       return nil
     end
+
+    @server_version = @conn.server_version
+    @after_9_2 = (@server_version > 90200)
+
     return @conn
 
   end
