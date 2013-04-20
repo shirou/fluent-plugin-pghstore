@@ -54,11 +54,7 @@ class Fluent::PgHStoreOutput < Fluent::BufferedOutput
   def generate_sql(tag, time, record)
     kv_list = []
     record.each {|(key,value)|
-      if @after_9_2
-        kv_list.push("\"#{key}\" , \"#{value}\"")
-      else
-        kv_list.push("\"#{key}\" => \"#{value}\"")
-      end
+      kv_list.push("\"#{key}\" => \"#{value}\"")
     }
 
     tag_list = tag.split(".")
