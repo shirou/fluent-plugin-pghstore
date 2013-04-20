@@ -4,7 +4,7 @@
 
 === PgHStoreOutput
 
-Output to PostgreSQL hstore database. 
+Output to PostgreSQL hstore database.
 
 Output table should have tag, time and record column.:
 
@@ -19,13 +19,13 @@ A tag is splited by "." and stored in the TEXT[]. (Yes, postgres can handle an a
 == Requirement
 
 - PostgreSQL 9.0 or higher
-  - hstore changed at PostgreSQL 9.0. 
+  - hstore changed at PostgreSQL 9.0.
 - postgres-contrib
 - ruby-pg
 
 === How to Install hstore
 
-hstore is in the contrib. 
+hstore is in the contrib.
 
 9.1 or higher:
 
@@ -42,25 +42,25 @@ Example:
   <match apache.*>
     type pghstore
     database test
-    table test 
+    table test
     table_option CREATE INDEX time_index ON testb (time);
   </match>
 
 === Options
 
 - Required
-  - database 
+  - database
     - database name
 - Optional
   - table
-    - tablename. 
-    - If not set, use +fluentd_store+. 
+    - tablename.
+    - If not set, use +fluentd_store+.
     - If not exists, creates automatically.
   - host
   - port
   - user
   - password
-  - table_option 
+  - table_option
     - Add some SQL. This SQL is called only once when table is created from this plugin.
 
 == Limitation
@@ -81,6 +81,11 @@ License::   Apache License
 
 
 == ChangeLog
+
+- 0.2.2 / 2013-04-20
+
+0.2.1 change caused error in 9.2. 0.2.1 change was not necessary. Thank you kaz29!
+
 
 - 0.2.1 / 2012-09-11
 

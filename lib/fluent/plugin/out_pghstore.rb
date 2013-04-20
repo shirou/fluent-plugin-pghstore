@@ -80,13 +80,10 @@ SQL
       else
         @conn = PG.connect(:dbname => @database, :host => @host, :port => @port)
       end
-    rescue PGError => e 
+    rescue PGError => e
       $log.error "Error: could not connect database:" + @database
       return nil
     end
-
-    @server_version = @conn.server_version
-    @after_9_2 = (@server_version > 90200)
 
     return @conn
 
