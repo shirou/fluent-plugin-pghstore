@@ -3,7 +3,7 @@ $:.push File.expand_path("../lib", __FILE__)
 
 Gem::Specification.new do |s|
   s.name        = "fluent-plugin-pghstore"
-  s.version     = "0.2.2"
+  s.version     = "0.2.3"
   s.authors     = ["WAKAYAMA Shirou"]
   s.email       = ["shirou.faw@gmail.com"]
   s.homepage    = "https://github.com/shirou/fluent-plugin-pghstore"
@@ -18,10 +18,10 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   # specify any dependencies here; for example:
-  s.add_development_dependency "rspec"
+  s.add_development_dependency "rspec", "~> 3.2.0"
   # s.add_runtime_dependency "rest-client"
-  s.add_development_dependency "fluentd"
-  s.add_development_dependency "pg"
-  s.add_runtime_dependency "fluentd"
-  s.add_runtime_dependency "pg"
+  s.add_development_dependency "fluentd", "~> 0.12.5"
+  s.add_development_dependency "pg", "~> 0.18.1"
+#  s.add_runtime_dependency "fluentd", "~> 0.12.5"
+#  s.add_runtime_dependency "pg", "~> 0.18.1"
 end
