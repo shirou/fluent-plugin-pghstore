@@ -38,7 +38,7 @@ class Fluent::PgHStoreOutput < Fluent::BufferedOutput
     return if conn == nil  # TODO: chunk will be dropped. should retry?
 
     chunk.msgpack_each {|(tag, time_str, record)|
-      sql = generate_sql(tag, time_str, record)
+      sql = generate_sql(conn, tag, time_str, record)
       begin
         conn.exec(sql)
       rescue PGError => e 
@@ -51,7 +51,7 @@ class Fluent::PgHStoreOutput < Fluent::BufferedOutput
 
   private
 
-  def generate_sql(tag, time, record)
+  def generate_sql(conn, tag, time, record)
     kv_list = []
     record.each {|(key,value)|
       kv_list.push("\"#{conn.escape_string(key)}\" => \"#{conn.escape_string(value)}\"")
