@@ -22,6 +22,7 @@ Gem::Specification.new do |s|
   # s.add_runtime_dependency "rest-client"
   s.add_development_dependency "fluentd", "~> 0.12.5"
   s.add_development_dependency "pg", "~> 0.18.1"
+  s.add_development_dependency "test-unit", "~> 3.1.0"
 #  s.add_runtime_dependency "fluentd", "~> 0.12.5"
 #  s.add_runtime_dependency "pg", "~> 0.18.1"
 end
