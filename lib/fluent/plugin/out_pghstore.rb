@@ -6,7 +6,7 @@ class Fluent::PgHStoreOutput < Fluent::BufferedOutput
   config_param :host, :string, :default => 'localhost'
   config_param :port, :integer, :default => 5432
   config_param :user, :string, :default => nil
-  config_param :password, :string, :default => nil
+  config_param :password, :string, :default => nil, :secret => true
 
   config_param :table_option, :string, :default => nil
 
