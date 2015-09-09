@@ -9,6 +9,7 @@ Gem::Specification.new do |s|
   s.homepage    = "https://github.com/shirou/fluent-plugin-pghstore"
   s.summary     = %q{Output to PostgreSQL database which has a hstore extension}
   s.description = %q{Output to PostgreSQL database which has a hstore extension}
+  s.license     = "Apache-2.0"
 
   s.rubyforge_project = "fluent-plugin-pghstore"
 
