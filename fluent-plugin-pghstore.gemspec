@@ -3,7 +3,7 @@ $:.push File.expand_path("../lib", __FILE__)
 
 Gem::Specification.new do |s|
   s.name        = "fluent-plugin-pghstore"
-  s.version     = "0.2.4"
+  s.version     = "0.2.5"
   s.authors     = ["WAKAYAMA Shirou"]
   s.email       = ["shirou.faw@gmail.com"]
   s.homepage    = "https://github.com/shirou/fluent-plugin-pghstore"
