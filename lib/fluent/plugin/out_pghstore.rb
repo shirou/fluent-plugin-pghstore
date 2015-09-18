@@ -54,7 +54,7 @@ class Fluent::PgHStoreOutput < Fluent::BufferedOutput
   def generate_sql(conn, tag, time, record)
     kv_list = []
     record.each {|(key,value)|
-      kv_list.push("\"#{conn.escape_string(key)}\" => \"#{conn.escape_string(value)}\"")
+      kv_list.push("\"#{conn.escape_string(key.to_s)}\" => \"#{conn.escape_string(value.to_s)}\"")
     }
 
     tag_list = tag.split(".")
