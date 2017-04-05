@@ -13,6 +13,7 @@ class Fluent::PgHStoreOutput < Fluent::BufferedOutput
   def initialize
     super
     require 'pg'
+    @conn = nil
   end
 
   def start
@@ -28,7 +29,7 @@ class Fluent::PgHStoreOutput < Fluent::BufferedOutput
       conn.close()
     end
   end
-  
+
   def format(tag, time, record)
     [tag, time, record].to_msgpack
   end
@@ -41,12 +42,24 @@ class Fluent::PgHStoreOutput < Fluent::BufferedOutput
       sql = generate_sql(conn, tag, time_str, record)
       begin
         conn.exec(sql)
-      rescue PGError => e 
+      rescue PGError => e
         $log.error "PGError: " + e.message  # dropped if error
       end
     }
 
     conn.close()
+  end
+
+  # for tests.
+  def table_schema(tablename)
+    sql =<<"SQL"
+CREATE TABLE #{tablename} (
+  tag TEXT[],
+  time TIMESTAMP WITH TIME ZONE,
+  record HSTORE
+);
+SQL
+    sql
   end
 
   private
@@ -105,13 +118,7 @@ SQL
   end
 
   def create_table(tablename)
-    sql =<<"SQL"
-CREATE TABLE #{tablename} (
-  tag TEXT[],
-  time TIMESTAMP WITH TIME ZONE,
-  record HSTORE
-);
-SQL
+    sql = table_schema(tablename)
 
     sql += @table_option if @table_option
 
@@ -119,7 +126,7 @@ SQL
     raise "Could not connect the database at create_table. abort." if conn == nil
 
     begin
-      conn.exec(sql) 
+      conn.exec(sql)
     rescue PGError => e
       $log.error "Error at create_table:" + e.message
       $log.error "SQL:" + sql
