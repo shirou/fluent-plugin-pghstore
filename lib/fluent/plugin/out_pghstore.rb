@@ -50,6 +50,18 @@ class Fluent::PgHStoreOutput < Fluent::BufferedOutput
     conn.close()
   end
 
+  # for tests.
+  def table_schema(tablename)
+    sql =<<"SQL"
+CREATE TABLE #{tablename} (
+  tag TEXT[],
+  time TIMESTAMP WITH TIME ZONE,
+  record HSTORE
+);
+SQL
+    sql
+  end
+
   private
 
   def generate_sql(conn, tag, time, record)
@@ -106,13 +118,7 @@ SQL
   end
 
   def create_table(tablename)
-    sql =<<"SQL"
-CREATE TABLE #{tablename} (
-  tag TEXT[],
-  time TIMESTAMP WITH TIME ZONE,
-  record HSTORE
-);
-SQL
+    sql = table_schema(tablename)
 
     sql += @table_option if @table_option
 
