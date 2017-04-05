@@ -13,6 +13,7 @@ class Fluent::PgHStoreOutput < Fluent::BufferedOutput
   def initialize
     super
     require 'pg'
+    @conn = nil
   end
 
   def start
