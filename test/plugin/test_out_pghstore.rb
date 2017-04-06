@@ -1,6 +1,8 @@
 require 'helper'
 
 class PGHStoreOutputTest < Test::Unit::TestCase
+  include Fluent::Test::Helpers
+
   def setup
     Fluent::Test.setup
   end
@@ -18,8 +20,8 @@ class PGHStoreOutputTest < Test::Unit::TestCase
     password #{PASSWORD}
   ]
 
-  def create_driver(conf = CONFIG, tag='test.input')
-    Fluent::Test::BufferedOutputTestDriver.new(Fluent::PgHStoreOutput, tag).configure(conf)
+  def create_driver(conf = CONFIG)
+    Fluent::Test::Driver::Output.new(Fluent::Plugin::PgHStoreOutput).configure(conf)
   end
 
   def test_configure
@@ -36,24 +38,26 @@ class PGHStoreOutputTest < Test::Unit::TestCase
     d = create_driver
     with_connection(d) do |_conn|
 
-      time = Time.parse("2011-01-02 13:14:15 UTC").to_i
-      d.emit({"a"=>1}, time)
-      d.emit({"a"=>2}, time)
+      time = event_time("2011-01-02 13:14:15 UTC")
+      d.run(default_tag: "test.input") do
+        d.feed(time, {"a"=>1})
+        d.feed(time, {"a"=>2})
+      end
+      formatted = d.formatted
 
-      d.expect_format ['test.input', time, {"a"=>1}].to_msgpack
-      d.expect_format ['test.input', time, {"a"=>2}].to_msgpack
-
-      d.run
+      assert_equal [time, {"a"=>1}].to_msgpack, formatted[0]
+      assert_equal [time, {"a"=>2}].to_msgpack, formatted[1]
     end
   end
 
   def test_write
     d = create_driver
     with_connection(d) do |conn|
-      time = Time.parse("2011-01-02 13:14:15 UTC").to_i
-      d.emit({"a"=>1}, time)
-      d.emit({"a"=>2}, time)
-      d.run
+      time = event_time("2011-01-02 13:14:15 UTC")
+      d.run(default_tag: "test.input") do
+        d.feed(time, {"a"=>1})
+        d.feed(time, {"a"=>2})
+      end
 
       wait_data(conn)
 
