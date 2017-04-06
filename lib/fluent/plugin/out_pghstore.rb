@@ -65,7 +65,7 @@ class Fluent::Plugin::PgHStoreOutput < Fluent::Plugin::Output
       begin
         conn.exec(sql)
       rescue PGError => e
-        $log.error "PGError: " + e.message  # dropped if error
+        log.error "PGError: " + e.message  # dropped if error
       end
     }
 
@@ -116,7 +116,7 @@ SQL
         @conn = PG.connect(:dbname => @database, :host => @host, :port => @port)
       end
     rescue PGError => e
-      $log.error "Error: could not connect database:" + @database
+      log.error "Error: could not connect database:" + @database
       return nil
     end
 
@@ -150,12 +150,12 @@ SQL
     begin
       conn.exec(sql)
     rescue PGError => e
-      $log.error "Error at create_table:" + e.message
-      $log.error "SQL:" + sql
+      log.error "Error at create_table:" + e.message
+      log.error "SQL:" + sql
     end
     conn.close
 
-    $log.warn "table #{tablename} was not exist. created it."
+    log.warn "table #{tablename} was not exist. created it."
   end
 
 end
