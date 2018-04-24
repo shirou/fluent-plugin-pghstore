@@ -1,5 +1,12 @@
-class Fluent::PgHStoreOutput < Fluent::BufferedOutput
+require 'pg'
+require 'fluent/plugin/output'
+
+class Fluent::Plugin::PgHStoreOutput < Fluent::Plugin::Output
   Fluent::Plugin.register_output('pghstore', self)
+
+  helpers :compat_parameters
+
+  DEFAULT_BUFFER_TYPE = "memory"
 
   config_param :database, :string
   config_param :table, :string, :default => 'fluentd_store'
@@ -10,10 +17,20 @@ class Fluent::PgHStoreOutput < Fluent::BufferedOutput
 
   config_param :table_option, :string, :default => nil
 
+  config_section :buffer do
+    config_set_default :@type, DEFAULT_BUFFER_TYPE
+    config_set_default :chunk_keys, ['tag']
+  end
+
   def initialize
     super
-    require 'pg'
     @conn = nil
+  end
+
+  def configure(conf)
+    compat_parameters_convert(conf, :buffer)
+    super
+    raise Fluent::ConfigError, "'tag' in chunk_keys is required." if not @chunk_key_tag
   end
 
   def start
@@ -31,19 +48,24 @@ class Fluent::PgHStoreOutput < Fluent::BufferedOutput
   end
 
   def format(tag, time, record)
-    [tag, time, record].to_msgpack
+    [time, record].to_msgpack
+  end
+
+  def formatted_to_msgpack_binary
+    true
   end
 
   def write(chunk)
     conn = get_connection()
     return if conn == nil  # TODO: chunk will be dropped. should retry?
 
-    chunk.msgpack_each {|(tag, time_str, record)|
+    tag = chunk.metadata.tag
+    chunk.msgpack_each {|(time_str, record)|
       sql = generate_sql(conn, tag, time_str, record)
       begin
         conn.exec(sql)
       rescue PGError => e
-        $log.error "PGError: " + e.message  # dropped if error
+        log.error "PGError: " + e.message  # dropped if error
       end
     }
 
@@ -94,7 +116,7 @@ SQL
         @conn = PG.connect(:dbname => @database, :host => @host, :port => @port)
       end
     rescue PGError => e
-      $log.error "Error: could not connect database:" + @database
+      log.error "Error: could not connect database:" + @database
       return nil
     end
 
@@ -128,12 +150,12 @@ SQL
     begin
       conn.exec(sql)
     rescue PGError => e
-      $log.error "Error at create_table:" + e.message
-      $log.error "SQL:" + sql
+      log.error "Error at create_table:" + e.message
+      log.error "SQL:" + sql
     end
     conn.close
 
-    $log.warn "table #{tablename} was not exist. created it."
+    log.warn "table #{tablename} was not exist. created it."
   end
 
 end

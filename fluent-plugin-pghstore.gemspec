@@ -21,10 +21,9 @@ Gem::Specification.new do |s|
   # specify any dependencies here; for example:
   s.add_development_dependency "rspec", "~> 3.2.0"
   # s.add_runtime_dependency "rest-client"
-  s.add_development_dependency "fluentd", [">= 0.12.5", "< 2"]
   s.add_development_dependency "pg", "~> 0.18.1"
   s.add_development_dependency "rake", ">= 11.0"
   s.add_development_dependency "test-unit", "~> 3.1.0"
-#  s.add_runtime_dependency "fluentd", "~> 0.12.5"
+  s.add_runtime_dependency "fluentd", [">= 0.14.0", "< 2"]
 #  s.add_runtime_dependency "pg", "~> 0.18.1"
 end
