@@ -64,8 +64,8 @@ class Fluent::Plugin::PgHStoreOutput < Fluent::Plugin::Output
       sql = generate_sql(conn, tag, time_str, record)
       begin
         conn.exec(sql)
-      rescue PGError => e
-        log.error "PGError: " + e.message  # dropped if error
+      rescue PG::Error => e
+        log.error "PG::Error: " + e.message  # dropped if error
       end
     }
 
@@ -115,7 +115,7 @@ SQL
       else
         @conn = PG.connect(:dbname => @database, :host => @host, :port => @port)
       end
-    rescue PGError => e
+    rescue PG::Error => e
       log.error "Error: could not connect database:" + @database
       return nil
     end
@@ -149,7 +149,7 @@ SQL
 
     begin
       conn.exec(sql)
-    rescue PGError => e
+    rescue PG::Error => e
       log.error "Error at create_table:" + e.message
       log.error "SQL:" + sql
     end
